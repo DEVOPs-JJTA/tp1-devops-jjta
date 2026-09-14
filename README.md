@@ -1,5 +1,6 @@
 # TP1 DevOps
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/730118df30f34c8c8866e33ba153bef7)](https://app.codacy.com/gh/DEVOPs-JJTA/tp1-devops-jjta?utm_source=github.com&utm_medium=referral&utm_content=DEVOPs-JJTA/tp1-devops-jjta&utm_campaign=Badge_Grade)
 [![CI/CD Pipeline](https://github.com/joabresper/tp1-devops/actions/workflows/ci-cd.yaml/badge.svg?branch=develop)](https://github.com/joabresper/tp1-devops/actions/workflows/ci-cd.yaml)
 
 Entorno de práctica para trabajar con contenedores, balanceo de carga y
