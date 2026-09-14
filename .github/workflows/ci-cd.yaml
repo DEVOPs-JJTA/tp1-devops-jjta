@@ -80,3 +80,10 @@ jobs:
           context: ./app-web
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp1-devops-app-web:latest
+      
+      - name: Build and Push Nginx proxy
+        uses: docker/build-push-action@v4
+        with:
+          context: ./proxy
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/tp1-devops-proxy:latest
