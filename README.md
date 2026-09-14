@@ -237,6 +237,10 @@ npm --prefix app-web run build
 
 ## Automatización y producción
 
+Para desplegar una demo gratuita usando **nuestras tres imágenes** en Render,
+seguir [RENDER.md](RENDER.md). Incluye la configuración HTTPS del proxy y las
+limitaciones del plan Free.
+
 El workflow `.github/workflows/ci-cd.yaml` conserva la automatización de
 `develop`, adaptada a la aplicación integrada:
 

@@ -39,6 +39,8 @@ jobs:
       - name: Build Web
         working-directory: ./app-web
         run: npm run build
+      - name: Check proxy in Compose and Render modes
+        run: sh proxy/test.sh
 
   trivy:
     name: Vulnerability Scan (Trivy)
