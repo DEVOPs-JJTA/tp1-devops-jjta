@@ -155,7 +155,7 @@ function App() {
       </section>
       </div>
     </main>
-      <footer className="app-version">Versión 1.0.2</footer>
+      <footer className="app-version">Versión 1.0.3</footer>
     </div>
   )
 }
