@@ -19,9 +19,9 @@ jobs:
     name: Run Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Install Dependencies
@@ -40,11 +40,11 @@ jobs:
         working-directory: ./app-web
         run: npm run build
 
-  sast:
+  trivy:
     name: Vulnerability Scan (Trivy)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner in fs mode
         uses: aquasecurity/trivy-action@master
         with:
@@ -54,28 +54,65 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
 
+  sast:
+    name: SAST (Codacy)
+    if: >-
+      (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Codacy Analysis CLI
+        run: npm install --global @codacy/analysis-cli@0.23.1
+      - name: Load Codacy configuration
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          if [ -z "$CODACY_PROJECT_TOKEN" ]; then
+            echo "::error::Configure the CODACY_PROJECT_TOKEN repository secret."
+            exit 1
+          fi
+          codacy-analysis init --remote gh "${GITHUB_REPOSITORY%%/*}" "${GITHUB_REPOSITORY#*/}"
+      - name: Analyze code
+        run: |
+          codacy-analysis analyze --install-dependencies --no-log \
+            --output-format sarif --output results.sarif
+      - name: Upload results to Codacy
+        # Upload findings even when analysis fails, without hiding the failure.
+        if: ${{ !cancelled() && hashFiles('results.sarif') != '' }}
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: codacy-analysis upload results.sarif
+
   build-and-push:
     name: Build & Push to Docker Hub
-    needs: [test, sast]
+    needs: [test, trivy, sast]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push API
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: ./api
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tp1-devops-api:latest
 
       - name: Build and Push Web
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: ./app-web
           push: true
