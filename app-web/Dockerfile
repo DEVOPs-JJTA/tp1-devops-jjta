@@ -3,10 +3,12 @@ ARG NODE_VERSION=22
 # --- Etapa 1: Base (Instalación de todas las dependencias) ---
 FROM node:${NODE_VERSION}-alpine AS base
 WORKDIR /usr/src/app
-COPY package*.json ./
+RUN chown node:node /usr/src/app
+USER node
+COPY --chown=node:node package*.json ./
 # Instalamos TODO, incluyendo Vite
 RUN npm install 
-COPY . .
+COPY --chown=node:node . .
 
 # --- Etapa 2: Entorno Local (Desarrollo) ---
 # Esta etapa usa Vite y expone el host para conectarse a Nginx en tu máquina
@@ -20,7 +22,8 @@ RUN npm run build
 
 # --- Etapa 4: Producción ---
 # Una imagen limpia y ultraligera que SOLO contiene un servidor web y tus archivos estáticos
-FROM nginx:alpine AS production
+FROM nginxinc/nginx-unprivileged:alpine AS production
+USER nginx
 # Copiamos el resultado de la Etapa 3 a la carpeta pública de Nginx
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
