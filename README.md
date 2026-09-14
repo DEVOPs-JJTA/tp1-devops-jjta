@@ -1,6 +1,7 @@
 # TP1 DevOps
 
-[![CI/CD Pipeline](https://github.com/joabresper/tp1-devops/actions/workflows/ci-cd.yaml/badge.svg?branch=develop)](https://github.com/joabresper/tp1-devops/actions/workflows/ci-cd.yaml)
+[![CI/CD Pipeline](https://github.com/DEVOPs-JJTA/tp1-devops-jjta/actions/workflows/ci-cd.yaml/badge.svg?branch=main&event=push)](https://github.com/DEVOPs-JJTA/tp1-devops-jjta/actions/workflows/ci-cd.yaml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/730118df30f34c8c8866e33ba153bef7)](https://app.codacy.com/gh/DEVOPs-JJTA/tp1-devops-jjta/dashboard)
 
 Entorno de práctica para trabajar con contenedores, balanceo de carga y
 comunicación entre servicios.
@@ -250,7 +251,7 @@ El workflow `.github/workflows/ci-cd.yaml` conserva la automatización de
   imágenes `tp1-devops-api:latest` y `tp1-devops-app-web:latest` en Docker Hub.
   Requiere los secrets `DOCKER_USERNAME` y `DOCKER_PASSWORD` (token de Docker Hub).
 - El workflow publica imágenes; el despliegue en un servidor sigue siendo manual.
-  El badge enlaza el estado real del workflow en `develop`.
+  Los badges muestran el estado del workflow en pushes a `main` y la valoración de Codacy.
 
 En el servidor con Docker, copiar `docker-compose.prod.yaml` y
 `proxy/nginx.conf`, conservando esa estructura. Crear un archivo `.env` junto
